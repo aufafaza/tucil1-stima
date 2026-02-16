@@ -4,6 +4,7 @@ type Board struct {
 	Size      int
 	Grid      [][]string
 	Q         []int
+	Iter      int
 	Solutions int
 }
 
