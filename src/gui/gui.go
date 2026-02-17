@@ -136,7 +136,13 @@ func (g *Game) Update() error {
 	for i := 0; i < g.IterationsPerFrame; i++ {
 		g.Board.Iter++
 
+		// per 100k iterations, add logging
+		if g.Board.Iter%100000 == 0 {
+			PrintBoardCLI(g.Board)
+		}
 		if solver.CheckValid(g.Board) {
+			fmt.Println("Solution found")
+			PrintBoardCLI(g.Board)
 			g.Found = true
 			g.EndTime = time.Since(g.StartTime)
 			g.Board.SolCount++
@@ -273,4 +279,18 @@ func (g *Game) SaveImage(path string) {
 	if err := png.Encode(f, rgba); err != nil {
 		log.Printf("Failed to encode PNG: %v", err)
 	}
+}
+
+func PrintBoardCLI(b *models.Board) {
+	for r := 0; r < b.Size; r++ {
+		for c := 0; c < b.Size; c++ {
+			if b.Q[r] == c {
+				fmt.Print("# ")
+			} else {
+				fmt.Print(". ")
+			}
+		}
+		fmt.Println()
+	}
+	fmt.Println("-------------------")
 }
