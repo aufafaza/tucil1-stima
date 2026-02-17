@@ -2,7 +2,9 @@ package gui
 
 import (
 	"fmt"
+	"image"
 	"image/color"
+	"image/png"
 	"log"
 	"os"
 	"path/filepath"
@@ -145,13 +147,15 @@ func (g *Game) Update() error {
 			baseName := filepath.Base(g.InputName)
 			nameOnly := strings.TrimSuffix(baseName, filepath.Ext(baseName))
 			outputName := "solution_" + nameOnly + ".txt"
-
+			imageName := "solution_" + nameOnly + ".png"
 			outputDir := "output"
 			os.MkdirAll(outputDir, 0755)
 
 			finalPath := filepath.Join(outputDir, outputName)
 			utils.WriteFile(finalPath, g.Board)
+			g.SaveImage(filepath.Join("output", imageName))
 			return nil
+
 		}
 
 		if !solver.NextState(g.Board) {
@@ -208,5 +212,65 @@ func StartGame(grid [][]string, originalPath string) {
 
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func (g *Game) SaveImage(path string) {
+	outImg := ebiten.NewImage(screenWidth, screenHeight)
+
+	outImg.Fill(color.White)
+
+	for row := 0; row < g.Board.Size; row++ {
+		for col := 0; col < g.Board.Size; col++ {
+			x := float32(col) * g.TileSize
+			y := float32(row) * g.TileSize
+
+			char := rune(g.Board.Grid[row][col][0])
+			cellColor, ok := palette[char]
+			if !ok {
+				cellColor = DefaultColor
+			}
+
+			vector.FillRect(
+				outImg,
+				x, y,
+				g.TileSize-1, g.TileSize-1,
+				cellColor,
+				false,
+			)
+
+			if g.Board.Q[row] == col {
+				queenColor := color.Black
+				if g.Found {
+					queenColor = color.White
+				}
+				padding := g.TileSize * 0.2
+
+				vector.DrawFilledCircle(
+					outImg,
+					x+(g.TileSize/2),
+					y+(g.TileSize/2),
+					(g.TileSize/2)-padding,
+					queenColor,
+					true,
+				)
+			}
+		}
+	}
+
+	rect := outImg.Bounds()
+	rgba := image.NewRGBA(rect)
+
+	outImg.ReadPixels(rgba.Pix)
+
+	f, err := os.Create(path)
+	if err != nil {
+		log.Printf("Failed to create file: %v", err)
+		return
+	}
+	defer f.Close()
+
+	if err := png.Encode(f, rgba); err != nil {
+		log.Printf("Failed to encode PNG: %v", err)
 	}
 }
