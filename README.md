@@ -7,7 +7,8 @@ Program tucil-1 ini merupakan solusi dari permainan Queens yang ada di LinkedIn.
 1. Clone the git repository 
 2. build the binary file: `make build` 
 3. run the file: `make run` 
-4. follow the instructions in the CLI 
+4. follow the instructions in the CLI, for GUI press 1, for heuristic (CLI) press 2. 
+
 note: this program was developed and tested in linux, hence it is recommended to use WSL for testing. 
 
 
