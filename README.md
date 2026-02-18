@@ -8,7 +8,7 @@ Program tucil-1 ini merupakan solusi dari permainan Queens yang ada di LinkedIn.
 2. build the binary file: `make build` 
 3. run the file: `make run` 
 4. follow the instructions in the CLI 
-
+note: this program was developed and tested in linux, hence it is recommended to use WSL for testing. 
 
 
 # Identity 
